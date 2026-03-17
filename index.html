@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Preposition Quiz</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 2rem 1rem;
+      color: #1a1a2e;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      color: #1a1a2e;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+    }
+
+    .stats-bar {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .stat {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .stat strong {
+      color: #1a1a2e;
+    }
+
+    .btn {
+      font-size: 0.85rem;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: white;
+      color: #444;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .btn:hover { background: #eee; }
+    .btn.danger { border-color: #e57373; color: #c62828; }
+    .btn.danger:hover { background: #fdecea; }
+
+    #done-banner {
+      display: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+    }
+
+    #done-banner.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: 1px solid #a5d6a7;
+    }
+
+    #done-banner.fail {
+      background: #fdecea;
+      color: #c62828;
+      border: 1px solid #ef9a9a;
+    }
+
+    #input-box {
+      width: 100%;
+      font-size: 1rem;
+      padding: 10px 14px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background: white;
+      color: #1a1a2e;
+      margin-bottom: 1rem;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    #input-box:focus { border-color: #5c6bc0; }
+    #input-box:disabled { background: #f0f0f0; color: #888; }
+
+    #word-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .word-pill {
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #f0f0f0;
+      color: #bbb;
+      transition: all 0.2s;
+    }
+
+    .word-pill.found {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-color: #a5d6a7;
+    }
+
+    .word-pill.missed {
+      background: #fdecea;
+      color: #c62828;
+      border-color: #ef9a9a;
+    }
+
+    /* ─── CONFIG PANEL ─────────────────────────────────────────── */
+    details {
+      margin-top: 2rem;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: white;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 0.85rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #444;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    summary::-webkit-details-marker { display: none; }
+    summary::before { content: '⚙'; font-size: 1rem; }
+
+    .config-body {
+      padding: 1rem 1.2rem 1.2rem;
+      border-top: 1px solid #eee;
+    }
+
+    .config-section-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #888;
+      margin: 1rem 0 0.5rem;
+    }
+
+    .config-section-title:first-child { margin-top: 0; }
+
+    .config-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.5rem;
+      align-items: center;
+    }
+
+    .config-row input[type="text"] {
+      flex: 1;
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fafafa;
+      color: #1a1a2e;
+      outline: none;
+    }
+
+    .config-row input[type="text"]:focus { border-color: #5c6bc0; }
+
+    .remove-btn {
+      font-size: 1rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #aaa;
+      padding: 0 4px;
+      line-height: 1;
+    }
+
+    .remove-btn:hover { color: #c62828; }
+
+    textarea#bulk-input {
+      width: 100%;
+      font-size: 0.85rem;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background: #fafafa;
+      color: #1a1a2e;
+      resize: vertical;
+      min-height: 80px;
+      outline: none;
+      font-family: monospace;
+    }
+
+    textarea#bulk-input:focus { border-color: #5c6bc0; }
+
+    .config-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn.primary {
+      background: #5c6bc0;
+      color: white;
+      border-color: #5c6bc0;
+    }
+
+    .btn.primary:hover { background: #3f51b5; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <h1 id="quiz-title">Preposition Quiz</h1>
+  <p class="subtitle" id="quiz-subtitle">Type all the prepositions you can remember. Press Enter after each one.</p>
+
+  <div class="stats-bar">
+    <div class="stat">Found: <strong id="found-count">0</strong> / <strong id="total-count">0</strong></div>
+    <div class="stat">Time: <strong id="timer">0:00</strong></div>
+    <button class="btn" onclick="resetQuiz()">Restart</button>
+    <button class="btn danger" onclick="giveUp()">Give up</button>
+  </div>
+
+  <div id="done-banner"></div>
+  <input id="input-box" type="text" placeholder="Type a word and press Enter..." autocomplete="off" autocorrect="off" spellcheck="false" />
+  <div id="word-grid"></div>
+
+  <!-- ── CONFIGURATION PANEL ── -->
+  <details id="config-panel">
+    <summary>Configure quiz</summary>
+    <div class="config-body">
+
+      <div class="config-section-title">Quiz title &amp; subtitle</div>
+      <div class="config-row">
+        <input type="text" id="cfg-title" value="Preposition Quiz" placeholder="Quiz title" />
+      </div>
+      <div class="config-row">
+        <input type="text" id="cfg-subtitle" value="Type all the prepositions you can remember. Press Enter after each one." placeholder="Subtitle / instructions" />
+      </div>
+
+      <div class="config-section-title">Word list</div>
+      <div id="word-list-editor"></div>
+      <button class="btn" onclick="addWordRow('')" style="margin-top:6px;">+ Add word</button>
+
+      <div class="config-section-title">Bulk import (one word per line)</div>
+      <textarea id="bulk-input" placeholder="aboard&#10;about&#10;above&#10;according to&#10;..."></textarea>
+
+      <div class="config-actions">
+        <button class="btn primary" onclick="applyConfig()">Apply changes</button>
+        <button class="btn" onclick="bulkImport()">Import from text box</button>
+        <button class="btn" onclick="resetToDefaults()">Reset to defaults</button>
+      </div>
+
+    </div>
+  </details>
+
+</div>
+
+<script>
+  // ════════════════════════════════════════════════════
+  // ► EDIT THIS LIST TO CHANGE THE DEFAULT QUIZ WORDS
+  // ════════════════════════════════════════════════════
+  const DEFAULT_WORDS = [
+    "aboard","about","above","across","after","against","along","amid","among","around",
+    "as","at","before","behind","below","beneath","besides","between","beyond","but",
+    "by","concerning","down","during","except","for","from","in","inside","into",
+    "like","near","of","off","on","onto","out","outside","over","past",
+    "since","such as","throughout","to","toward","under","underneath","until","up","upon",
+    "with","within","without",
+    "according to","because of","by means of","in addition to","in front of",
+    "in spite of","instead of","on account of","prior to"
+  ];
+
+  const DEFAULT_TITLE    = "Preposition Quiz";
+  const DEFAULT_SUBTITLE = "Type all the prepositions you can remember. Press Enter after each one.";
+  // ════════════════════════════════════════════════════
+
+  let WORDS   = [...DEFAULT_WORDS];
+  let found   = new Set();
+  let seconds = 0;
+  let started = false;
+  let finished = false;
+  let timerInterval = null;
+
+  function pad(n){ return n < 10 ? '0'+n : n; }
+
+  function updateTimer(){
+    seconds++;
+    const m = Math.floor(seconds/60);
+    document.getElementById('timer').textContent = m+':'+pad(seconds%60);
+  }
+
+  function renderGrid(revealMissed){
+    const grid = document.getElementById('word-grid');
+    grid.innerHTML = '';
+    WORDS.forEach(w => {
+      const d = document.createElement('div');
+      const isFound  = found.has(w);
+      const isMissed = revealMissed && !isFound;
+      d.className = 'word-pill' + (isFound ? ' found' : isMissed ? ' missed' : '');
+      d.textContent = (isFound || isMissed) ? w : '?'.repeat(Math.min(w.length, 7));
+      grid.appendChild(d);
+    });
+  }
+
+  function resetQuiz(){
+    found = new Set();
+    seconds = 0;
+    started = finished = false;
+    clearInterval(timerInterval);
+    timerInterval = null;
+    document.getElementById('timer').textContent = '0:00';
+    document.getElementById('found-count').textContent = '0';
+    document.getElementById('total-count').textContent = WORDS.length;
+    const banner = document.getElementById('done-banner');
+    banner.style.display = 'none';
+    banner.className = '';
+    const inp = document.getElementById('input-box');
+    inp.value = '';
+    inp.disabled = false;
+    inp.focus();
+    renderGrid(false);
+  }
+
+  function giveUp(){
+    if(finished) return;
+    finished = true;
+    clearInterval(timerInterval);
+    document.getElementById('input-box').disabled = true;
+    renderGrid(true);
+    const missed = WORDS.length - found.size;
+    showBanner(`You found ${found.size} of ${WORDS.length}. ${missed} word${missed===1?'':'s'} missed (shown in red).`, 'fail');
+  }
+
+  function showBanner(msg, type){
+    const b = document.getElementById('done-banner');
+    b.textContent = msg;
+    b.className = type;
+    b.style.display = 'block';
+  }
+
+  document.getElementById('input-box').addEventListener('keydown', function(e){
+    if(e.key !== 'Enter') return;
+    const val = this.value.trim().toLowerCase();
+    this.value = '';
+    if(!val || finished) return;
+    if(!started){
+      started = true;
+      timerInterval = setInterval(updateTimer, 1000);
+    }
+    if(WORDS.includes(val) && !found.has(val)){
+      found.add(val);
+      document.getElementById('found-count').textContent = found.size;
+      renderGrid(false);
+      if(found.size === WORDS.length){
+        finished = true;
+        clearInterval(timerInterval);
+        document.getElementById('input-box').disabled = true;
+        const m = Math.floor(seconds/60);
+        showBanner(`You got all ${WORDS.length}! Time: ${m}:${pad(seconds%60)}`, 'success');
+      }
+    }
+  });
+
+  // ─── CONFIG PANEL LOGIC ─────────────────────────────
+
+  function buildWordEditor(){
+    const editor = document.getElementById('word-list-editor');
+    editor.innerHTML = '';
+    WORDS.forEach((w, i) => {
+      const row = document.createElement('div');
+      row.className = 'config-row';
+      row.innerHTML = `
+        <input type="text" value="${escHtml(w)}" data-index="${i}" placeholder="word or phrase" />
+        <button class="remove-btn" onclick="removeWordRow(${i})">✕</button>
+      `;
+      editor.appendChild(row);
+    });
+  }
+
+  function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'); }
+
+  function addWordRow(val){
+    WORDS.push(val || '');
+    buildWordEditor();
+  }
+
+  function removeWordRow(i){
+    WORDS.splice(i, 1);
+    buildWordEditor();
+  }
+
+  function readEditorWords(){
+    return Array.from(document.querySelectorAll('#word-list-editor input[type=text]'))
+      .map(el => el.value.trim().toLowerCase())
+      .filter(Boolean);
+  }
+
+  function applyConfig(){
+    const title    = document.getElementById('cfg-title').value.trim() || DEFAULT_TITLE;
+    const subtitle = document.getElementById('cfg-subtitle').value.trim() || DEFAULT_SUBTITLE;
+    WORDS = readEditorWords();
+    if(!WORDS.length){ alert('Word list is empty!'); return; }
+    document.getElementById('quiz-title').textContent    = title;
+    document.getElementById('quiz-subtitle').textContent = subtitle;
+    document.getElementById('config-panel').removeAttribute('open');
+    resetQuiz();
+  }
+
+  function bulkImport(){
+    const lines = document.getElementById('bulk-input').value
+      .split('\n')
+      .map(l => l.trim().toLowerCase())
+      .filter(Boolean);
+    if(!lines.length){ alert('Text box is empty.'); return; }
+    WORDS = lines;
+    buildWordEditor();
+    document.getElementById('bulk-input').value = '';
+  }
+
+  function resetToDefaults(){
+    WORDS = [...DEFAULT_WORDS];
+    document.getElementById('cfg-title').value    = DEFAULT_TITLE;
+    document.getElementById('cfg-subtitle').value = DEFAULT_SUBTITLE;
+    buildWordEditor();
+  }
+
+  document.getElementById('config-panel').addEventListener('toggle', function(){
+    if(this.open) buildWordEditor();
+  });
+
+  // ─── INIT ────────────────────────────────────────────
+  resetQuiz();
+</script>
+</body>
+</html>
